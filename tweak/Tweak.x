@@ -42,7 +42,8 @@ static int rows = 2;
 	// a preference change can move rows mid-layout, so work off one snapshot
 	int rowCount = rows;
 
-	int groupWidths[rowCount];
+	// an element never needs more than a row to itself, which bounds the growth below
+	int groupWidths[rowCount + elements.count];
 	memset(groupWidths, 0, sizeof(groupWidths));
 
 	NSMutableArray *groups = [[NSMutableArray alloc] initWithCapacity:rowCount];
@@ -59,13 +60,11 @@ static int rows = 2;
 				break;
 			}
 		}
-		// nothing fits once rows drops before the element list is rebuilt; use the
-		// emptiest group so the element still gets a frame instead of none at all
+		// the saved complications can outlast a drop in rows, so add a row rather
+		// than overfill one and spill off both edges of the screen
 		if (target < 0) {
-			target = 0;
-			for (int i = 1; i < rowCount; i++) {
-				if (groupWidths[i] < groupWidths[target]) target = i;
-			}
+			target = rowCount++;
+			[groups addObject:[[NSMutableArray alloc] initWithCapacity:ELEMENTS_PER_ROW]];
 		}
 		groupWidths[target] += element.gridWidth;
 		[groups[target] addObject:element];
