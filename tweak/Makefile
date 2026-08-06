@@ -1,3 +1,4 @@
+TARGET = iphone:clang:16.5:16.0
 TWEAK_NAME = MoreComplications
 MoreComplications_FILES = Tweak.x
 MoreComplications_CFLAGS = -fobjc-arc

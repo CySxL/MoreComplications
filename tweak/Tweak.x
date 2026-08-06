@@ -1,5 +1,11 @@
 #import <Foundation/Foundation.h>
+#ifdef THEOS_PACKAGE_SCHEME_ROOTHIDE
+#import <roothide.h>
+#define JBROOT_NS(p) jbroot(p)
+#else
 #import <rootless.h>
+#define JBROOT_NS(p) ROOT_PATH_NS(p)
+#endif
 #import "Tweak.h"
 
 #define BUNDLE_ID @"xyz.skitty.morecomplications"
@@ -87,7 +93,7 @@ void refreshPrefs() {
 		settings = nil;
 	}
 	if (!settings) {
-		NSString *settingsPath = ROOT_PATH_NS(@"/var/mobile/Library/Preferences/");
+		NSString *settingsPath = JBROOT_NS(@"/var/mobile/Library/Preferences/");
 		settings = [[NSMutableDictionary alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@%@.plist", settingsPath, BUNDLE_ID]];
 	}
 
