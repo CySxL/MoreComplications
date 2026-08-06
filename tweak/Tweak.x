@@ -85,9 +85,21 @@ static int elementSpacing = 10;
 
 	for (int i = 0; i < rowCount; i++) {
 		NSArray<CSComplicationLayoutElement *> *group = groups[i];
-		if (group.count == 0) break;
+		if (group.count == 0) continue;
 
 		NSDictionary<CSComplicationLayoutElement *, NSValue *> *frames = %orig(group, smallContainerSize);
+		double rowOffset = i * (smallContainerSize.height + rowGap);
+
+		// nothing to respace when the gap is untouched or there is only one element,
+		// so keep the row exactly where the system put it
+		if (elementSpacing == 10 || group.count < 2) {
+			[frames enumerateKeysAndObjectsUsingBlock:^(CSComplicationLayoutElement *element, NSValue *value, BOOL *stop) {
+				NSRect frame = [value CGRectValue];
+				frame.origin.y += rowOffset;
+				newFrames[element] = [NSValue valueWithCGRect:frame];
+			}];
+			continue;
+		}
 
 		NSArray<CSComplicationLayoutElement *> *ordered = [group sortedArrayUsingComparator:^NSComparisonResult(CSComplicationLayoutElement *a, CSComplicationLayoutElement *b) {
 			double xa = [frames[a] CGRectValue].origin.x;
@@ -98,25 +110,19 @@ static int elementSpacing = 10;
 
 		// take the gap the system chose and rebuild the row around our own, keeping
 		// every element at the width it was given
-		double naturalGap = 0;
 		double totalWidth = 0;
 		for (CSComplicationLayoutElement *element in ordered) {
 			totalWidth += [frames[element] CGRectValue].size.width;
 		}
-		if (ordered.count > 1) {
-			NSRect first = [frames[ordered[0]] CGRectValue];
-			naturalGap = [frames[ordered[1]] CGRectValue].origin.x - (first.origin.x + first.size.width);
-		}
+		NSRect first = [frames[ordered[0]] CGRectValue];
+		double naturalGap = [frames[ordered[1]] CGRectValue].origin.x - (first.origin.x + first.size.width);
 
 		double gap = naturalGap * (elementSpacing / 10.0);
-		if (ordered.count > 1) {
-			double maxGap = (smallContainerSize.width - totalWidth) / (ordered.count - 1);
-			if (gap > maxGap) gap = maxGap;
-			if (gap < 0) gap = 0;
-		}
+		double maxGap = (smallContainerSize.width - totalWidth) / (ordered.count - 1);
+		if (gap > maxGap) gap = maxGap;
+		if (gap < 0) gap = 0;
 
 		double x = (smallContainerSize.width - (totalWidth + gap * (ordered.count - 1))) / 2;
-		double rowOffset = i * (smallContainerSize.height + rowGap);
 
 		for (CSComplicationLayoutElement *element in ordered) {
 			NSRect frame = [frames[element] CGRectValue];
