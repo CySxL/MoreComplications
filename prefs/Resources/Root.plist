@@ -74,7 +74,7 @@
 			<key>key</key>
 			<string>rowSpacing</string>
 			<key>label</key>
-			<string>Row Spacing: %i0%</string>
+			<string>Row Spacing: %i0%%</string>
 		</dict>
 		<dict>
 			<key>cellClass</key>
@@ -92,7 +92,7 @@
 			<key>key</key>
 			<string>elementSpacing</string>
 			<key>label</key>
-			<string>Element Spacing: %i0%</string>
+			<string>Element Spacing: %i0%%</string>
 		</dict>
 		<dict>
 			<key>cell</key>
