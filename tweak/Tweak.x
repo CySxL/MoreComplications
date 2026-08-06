@@ -39,34 +39,47 @@ static int rows = 2;
 + (NSDictionary<CSComplicationLayoutElement *, NSValue *> *)_framesForLayoutElements:(NSArray<CSComplicationLayoutElement *> *)elements containerSize:(CGSize)containerSize {
 	if (!enabled || elements.count == 0) return %orig;
 
-	int groupWidths[rows];
+	// a preference change can move rows mid-layout, so work off one snapshot
+	int rowCount = rows;
+
+	int groupWidths[rowCount];
 	memset(groupWidths, 0, sizeof(groupWidths));
 
-	NSMutableArray *groups = [[NSMutableArray alloc] initWithCapacity:rows];
-	for (int i = 0; i < rows; ++i) {
+	NSMutableArray *groups = [[NSMutableArray alloc] initWithCapacity:rowCount];
+	for (int i = 0; i < rowCount; ++i) {
 		[groups addObject:[[NSMutableArray alloc] initWithCapacity:ELEMENTS_PER_ROW]];
 	}
 
 	// put each element in the first group that can fit it
 	for (CSComplicationLayoutElement *element in elements) {
-		for (int i = 0; i < rows; i++) {
+		int target = -1;
+		for (int i = 0; i < rowCount; i++) {
 			if (groupWidths[i] + element.gridWidth <= ELEMENTS_PER_ROW) {
-				groupWidths[i] += element.gridWidth;
-				[groups[i] addObject:element];
+				target = i;
 				break;
 			}
 		}
+		// nothing fits once rows drops before the element list is rebuilt; use the
+		// emptiest group so the element still gets a frame instead of none at all
+		if (target < 0) {
+			target = 0;
+			for (int i = 1; i < rowCount; i++) {
+				if (groupWidths[i] < groupWidths[target]) target = i;
+			}
+		}
+		groupWidths[target] += element.gridWidth;
+		[groups[target] addObject:element];
 	}
 
 	// get the original container size so we can reuse the original function
 	double spacing = [%c(CSGraphicComplicationLayoutProvider) complicationEdgeInset];
 	CGSize smallContainerSize = containerSize;
-	smallContainerSize.height -= spacing * (rows - 1);
-	smallContainerSize.height /= rows;
+	smallContainerSize.height -= spacing * (rowCount - 1);
+	smallContainerSize.height /= rowCount;
 
 	NSMutableDictionary<CSComplicationLayoutElement *, NSValue *> *newFrames = [[NSMutableDictionary alloc] initWithCapacity:elements.count];
 
-	for (int i = 0; i < rows; i++) {
+	for (int i = 0; i < rowCount; i++) {
 		NSArray<CSComplicationLayoutElement *> *group = groups[i];
 		if (group.count == 0) break;
 
