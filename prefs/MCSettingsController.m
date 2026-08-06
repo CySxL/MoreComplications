@@ -8,6 +8,7 @@
 #define JBROOT_STR(p) ROOT_PATH(p)
 #endif
 #import <spawn.h>
+#import <sys/wait.h>
 extern char **environ;
 
 @implementation MCSettingsController
@@ -16,8 +17,9 @@ extern char **environ;
 	// kill PostBoard too
 	pid_t pid;
 	const char *argv[] = {JBROOT_STR("/usr/bin/killall"), "-9", "PosterBoard", NULL};
-	posix_spawn(&pid, argv[0], NULL, NULL, (char* const*)argv, environ);
-	waitpid(pid, NULL, WEXITED);
+	if (posix_spawn(&pid, argv[0], NULL, NULL, (char* const*)argv, environ) == 0) {
+		waitpid(pid, NULL, 0);
+	}
 
 	// respring
 	SBSRelaunchAction *restartAction = [NSClassFromString(@"SBSRelaunchAction") actionWithReason:@"RestartRenderServer" options:SBSRelaunchOptionsFadeToBlack targetURL:[NSURL URLWithString:@"prefs:root=MoreComplications"]];
