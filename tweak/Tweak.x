@@ -11,7 +11,7 @@
 #define BUNDLE_ID @"xyz.skitty.morecomplications"
 #define ELEMENTS_PER_ROW 4
 
-static NSMutableDictionary *settings;
+static NSDictionary *settings;
 static BOOL enabled = YES;
 static int rows = 2;
 
@@ -21,8 +21,8 @@ static int rows = 2;
 + (bool)canAddElement:(CSComplicationLayoutElement *)element toElements:(NSArray<CSComplicationLayoutElement *> *)elements {
 	if (!enabled) return %orig;
 	long long totalWidth = 0;
-	for (CSComplicationLayoutElement *element in elements) {
-		totalWidth += element.gridWidth;
+	for (CSComplicationLayoutElement *e in elements) {
+		totalWidth += e.gridWidth;
 	}
 	return totalWidth + element.gridWidth <= rows * ELEMENTS_PER_ROW;
 }
@@ -37,20 +37,21 @@ static int rows = 2;
 
 // handle the positions of the complications
 + (NSDictionary<CSComplicationLayoutElement *, NSValue *> *)_framesForLayoutElements:(NSArray<CSComplicationLayoutElement *> *)elements containerSize:(CGSize)containerSize {
-	if (!enabled) return %orig;
+	if (!enabled || elements.count == 0) return %orig;
 
-	NSMutableArray *groups = [NSMutableArray new];
-	NSMutableArray *groupWidths = [NSMutableArray new];
+	int groupWidths[rows];
+	memset(groupWidths, 0, sizeof(groupWidths));
+
+	NSMutableArray *groups = [[NSMutableArray alloc] initWithCapacity:rows];
 	for (int i = 0; i < rows; ++i) {
-		[groups addObject:[NSMutableArray new]];
-		[groupWidths addObject:@0];
+		[groups addObject:[[NSMutableArray alloc] initWithCapacity:ELEMENTS_PER_ROW]];
 	}
 
 	// put each element in the first group that can fit it
 	for (CSComplicationLayoutElement *element in elements) {
-		for (int i = 0; i < [groupWidths count]; i++) {
-			if ([groupWidths[i] intValue] + element.gridWidth <= ELEMENTS_PER_ROW) {
-				groupWidths[i] = @([groupWidths[i] intValue] + element.gridWidth);
+		for (int i = 0; i < rows; i++) {
+			if (groupWidths[i] + element.gridWidth <= ELEMENTS_PER_ROW) {
+				groupWidths[i] += element.gridWidth;
 				[groups[i] addObject:element];
 				break;
 			}
@@ -63,19 +64,19 @@ static int rows = 2;
 	smallContainerSize.height -= spacing * (rows - 1);
 	smallContainerSize.height /= rows;
 
-	NSMutableDictionary<CSComplicationLayoutElement *, NSValue *> *newFrames = [NSMutableDictionary dictionary];
+	NSMutableDictionary<CSComplicationLayoutElement *, NSValue *> *newFrames = [[NSMutableDictionary alloc] initWithCapacity:elements.count];
 
-	for (int i = 0; i < [groups count]; i++) {
+	for (int i = 0; i < rows; i++) {
 		NSArray<CSComplicationLayoutElement *> *group = groups[i];
-		if ([group count] == 0) {
-			break;
-		}
+		if (group.count == 0) break;
+
 		NSDictionary<CSComplicationLayoutElement *, NSValue *> *frames = %orig(group, smallContainerSize);
-		for (CSComplicationLayoutElement *element in frames) {
-			NSRect frame = [frames[element] CGRectValue];
+
+		[frames enumerateKeysAndObjectsUsingBlock:^(CSComplicationLayoutElement *element, NSValue *value, BOOL *stop) {
+			NSRect frame = [value CGRectValue];
 			frame.origin.y += i * (smallContainerSize.height + spacing);
 			newFrames[element] = [NSValue valueWithCGRect:frame];
-		}
+		}];
 	}
 
 	return newFrames;
@@ -87,18 +88,20 @@ static int rows = 2;
 void refreshPrefs() {
 	CFArrayRef keyList = CFPreferencesCopyKeyList((CFStringRef)BUNDLE_ID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
 	if (keyList) {
-		settings = (NSMutableDictionary *)CFBridgingRelease(CFPreferencesCopyMultiple(keyList, (CFStringRef)BUNDLE_ID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
+		settings = (NSDictionary *)CFBridgingRelease(CFPreferencesCopyMultiple(keyList, (CFStringRef)BUNDLE_ID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
 		CFRelease(keyList);
 	} else {
 		settings = nil;
 	}
 	if (!settings) {
 		NSString *settingsPath = JBROOT_NS(@"/var/mobile/Library/Preferences/");
-		settings = [[NSMutableDictionary alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@%@.plist", settingsPath, BUNDLE_ID]];
+		settings = [[NSDictionary alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@%@.plist", settingsPath, BUNDLE_ID]];
 	}
 
-	enabled = [([settings objectForKey:@"enabled"] ?: @(YES)) boolValue];
-	rows = [([settings objectForKey:@"rows"] ?: @(2)) intValue];
+	enabled = settings[@"enabled"] ? [settings[@"enabled"] boolValue] : YES;
+	rows = settings[@"rows"] ? [settings[@"rows"] intValue] : 2;
+	if (rows < 1) rows = 1;
+	if (rows > 8) rows = 8;
 }
 
 static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
