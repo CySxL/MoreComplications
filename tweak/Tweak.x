@@ -31,7 +31,7 @@ static int rows = 2;
 + (double)complicationContainerHeight {
 	double complicationContainerHeight = %orig;
 	if (!enabled || rows == 1) return complicationContainerHeight;
-	double spacing = [%c(CSGraphicComplicationLayoutProvider) complicationEdgeInset];
+	double spacing = [self complicationEdgeInset];
 	return complicationContainerHeight * rows + spacing * (rows - 1);
 }
 
@@ -72,7 +72,7 @@ static int rows = 2;
 	}
 
 	// get the original container size so we can reuse the original function
-	double spacing = [%c(CSGraphicComplicationLayoutProvider) complicationEdgeInset];
+	double spacing = [self complicationEdgeInset];
 	CGSize smallContainerSize = containerSize;
 	smallContainerSize.height -= spacing * (rowCount - 1);
 	smallContainerSize.height /= rowCount;
