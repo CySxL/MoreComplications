@@ -59,6 +59,42 @@
 			<string>Rows: %i</string>
 		</dict>
 		<dict>
+			<key>cellClass</key>
+			<string>SPStepperCell</string>
+			<key>defaults</key>
+			<string>xyz.skitty.morecomplications</string>
+			<key>PostNotification</key>
+			<string>xyz.skitty.morecomplications.prefschanged</string>
+			<key>default</key>
+			<real>10</real>
+			<key>min</key>
+			<real>0</real>
+			<key>max</key>
+			<real>20</real>
+			<key>key</key>
+			<string>rowSpacing</string>
+			<key>label</key>
+			<string>Row Spacing: %i0%</string>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>SPStepperCell</string>
+			<key>defaults</key>
+			<string>xyz.skitty.morecomplications</string>
+			<key>PostNotification</key>
+			<string>xyz.skitty.morecomplications.prefschanged</string>
+			<key>default</key>
+			<real>10</real>
+			<key>min</key>
+			<real>0</real>
+			<key>max</key>
+			<real>20</real>
+			<key>key</key>
+			<string>elementSpacing</string>
+			<key>label</key>
+			<string>Element Spacing: %i0%</string>
+		</dict>
+		<dict>
 			<key>cell</key>
 			<string>PSGroupCell</string>
 		</dict>

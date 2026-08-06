@@ -13,6 +13,9 @@
 
 static BOOL enabled = YES;
 static int rows = 2;
+// tenths of the spacing the system would use, so 10 leaves the layout untouched
+static int rowSpacing = 10;
+static int elementSpacing = 10;
 
 %hook CSGraphicComplicationLayoutProvider
 
@@ -31,13 +34,15 @@ static int rows = 2;
 + (double)complicationContainerHeight {
 	double complicationContainerHeight = %orig;
 	if (!enabled || rows == 1) return complicationContainerHeight;
-	double spacing = [self complicationEdgeInset];
-	return complicationContainerHeight * rows + spacing * (rows - 1);
+	double rowGap = [self complicationEdgeInset] * (rowSpacing / 10.0);
+	return complicationContainerHeight * rows + rowGap * (rows - 1);
 }
 
 // handle the positions of the complications
 + (NSDictionary<CSComplicationLayoutElement *, NSValue *> *)_framesForLayoutElements:(NSArray<CSComplicationLayoutElement *> *)elements containerSize:(CGSize)containerSize {
-	if (!enabled || rows == 1 || elements.count == 0) return %orig;
+	if (!enabled || elements.count == 0) return %orig;
+	// one row with untouched spacing is what the system already does
+	if (rows == 1 && elementSpacing == 10) return %orig;
 
 	// a preference change can move rows mid-layout, so work off one snapshot
 	int rowCount = rows;
@@ -71,9 +76,9 @@ static int rows = 2;
 	}
 
 	// get the original container size so we can reuse the original function
-	double spacing = [self complicationEdgeInset];
+	double rowGap = [self complicationEdgeInset] * (rowSpacing / 10.0);
 	CGSize smallContainerSize = containerSize;
-	smallContainerSize.height -= spacing * (rowCount - 1);
+	smallContainerSize.height -= rowGap * (rowCount - 1);
 	smallContainerSize.height /= rowCount;
 
 	NSMutableDictionary<CSComplicationLayoutElement *, NSValue *> *newFrames = [[NSMutableDictionary alloc] initWithCapacity:elements.count];
@@ -84,11 +89,42 @@ static int rows = 2;
 
 		NSDictionary<CSComplicationLayoutElement *, NSValue *> *frames = %orig(group, smallContainerSize);
 
-		[frames enumerateKeysAndObjectsUsingBlock:^(CSComplicationLayoutElement *element, NSValue *value, BOOL *stop) {
-			NSRect frame = [value CGRectValue];
-			frame.origin.y += i * (smallContainerSize.height + spacing);
-			newFrames[element] = [NSValue valueWithCGRect:frame];
+		NSArray<CSComplicationLayoutElement *> *ordered = [group sortedArrayUsingComparator:^NSComparisonResult(CSComplicationLayoutElement *a, CSComplicationLayoutElement *b) {
+			double xa = [frames[a] CGRectValue].origin.x;
+			double xb = [frames[b] CGRectValue].origin.x;
+			if (xa < xb) return NSOrderedAscending;
+			return xa > xb ? NSOrderedDescending : NSOrderedSame;
 		}];
+
+		// take the gap the system chose and rebuild the row around our own, keeping
+		// every element at the width it was given
+		double naturalGap = 0;
+		double totalWidth = 0;
+		for (CSComplicationLayoutElement *element in ordered) {
+			totalWidth += [frames[element] CGRectValue].size.width;
+		}
+		if (ordered.count > 1) {
+			NSRect first = [frames[ordered[0]] CGRectValue];
+			naturalGap = [frames[ordered[1]] CGRectValue].origin.x - (first.origin.x + first.size.width);
+		}
+
+		double gap = naturalGap * (elementSpacing / 10.0);
+		if (ordered.count > 1) {
+			double maxGap = (smallContainerSize.width - totalWidth) / (ordered.count - 1);
+			if (gap > maxGap) gap = maxGap;
+			if (gap < 0) gap = 0;
+		}
+
+		double x = (smallContainerSize.width - (totalWidth + gap * (ordered.count - 1))) / 2;
+		double rowOffset = i * (smallContainerSize.height + rowGap);
+
+		for (CSComplicationLayoutElement *element in ordered) {
+			NSRect frame = [frames[element] CGRectValue];
+			frame.origin.x = x;
+			frame.origin.y += rowOffset;
+			newFrames[element] = [NSValue valueWithCGRect:frame];
+			x += frame.size.width + gap;
+		}
 	}
 
 	return newFrames;
@@ -113,6 +149,12 @@ static void refreshPrefs(void) {
 	rows = settings[@"rows"] ? [settings[@"rows"] intValue] : 2;
 	if (rows < 1) rows = 1;
 	if (rows > 8) rows = 8;
+	rowSpacing = settings[@"rowSpacing"] ? [settings[@"rowSpacing"] intValue] : 10;
+	if (rowSpacing < 0) rowSpacing = 0;
+	if (rowSpacing > 20) rowSpacing = 20;
+	elementSpacing = settings[@"elementSpacing"] ? [settings[@"elementSpacing"] intValue] : 10;
+	if (elementSpacing < 0) elementSpacing = 0;
+	if (elementSpacing > 20) elementSpacing = 20;
 }
 
 static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
