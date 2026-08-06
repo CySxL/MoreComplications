@@ -11,7 +11,6 @@
 #define BUNDLE_ID @"xyz.skitty.morecomplications"
 #define ELEMENTS_PER_ROW 4
 
-static NSDictionary *settings;
 static BOOL enabled = YES;
 static int rows = 2;
 
@@ -98,13 +97,12 @@ static int rows = 2;
 %end
 
 // Preference updates
-void refreshPrefs() {
+static void refreshPrefs(void) {
+	NSDictionary *settings = nil;
 	CFArrayRef keyList = CFPreferencesCopyKeyList((CFStringRef)BUNDLE_ID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
 	if (keyList) {
 		settings = (NSDictionary *)CFBridgingRelease(CFPreferencesCopyMultiple(keyList, (CFStringRef)BUNDLE_ID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost));
 		CFRelease(keyList);
-	} else {
-		settings = nil;
 	}
 	if (!settings) {
 		NSString *settingsPath = JBROOT_NS(@"/var/mobile/Library/Preferences/");
