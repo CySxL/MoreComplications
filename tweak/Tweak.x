@@ -18,7 +18,8 @@ static int rows = 2;
 
 // allow adding more elements to the complication
 + (bool)canAddElement:(CSComplicationLayoutElement *)element toElements:(NSArray<CSComplicationLayoutElement *> *)elements {
-	if (!enabled) return %orig;
+	// one row is what the system already does, so stay out of the way entirely
+	if (!enabled || rows == 1) return %orig;
 	long long totalWidth = 0;
 	for (CSComplicationLayoutElement *e in elements) {
 		totalWidth += e.gridWidth;
@@ -29,14 +30,14 @@ static int rows = 2;
 // change the height of the complication container to fit more rows
 + (double)complicationContainerHeight {
 	double complicationContainerHeight = %orig;
-	if (!enabled) return complicationContainerHeight;
+	if (!enabled || rows == 1) return complicationContainerHeight;
 	double spacing = [%c(CSGraphicComplicationLayoutProvider) complicationEdgeInset];
 	return complicationContainerHeight * rows + spacing * (rows - 1);
 }
 
 // handle the positions of the complications
 + (NSDictionary<CSComplicationLayoutElement *, NSValue *> *)_framesForLayoutElements:(NSArray<CSComplicationLayoutElement *> *)elements containerSize:(CGSize)containerSize {
-	if (!enabled || elements.count == 0) return %orig;
+	if (!enabled || rows == 1 || elements.count == 0) return %orig;
 
 	// a preference change can move rows mid-layout, so work off one snapshot
 	int rowCount = rows;
