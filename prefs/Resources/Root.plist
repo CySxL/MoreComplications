@@ -126,6 +126,18 @@
 			<key>imageURL</key>
 			<string>https://github.com/skittyblock.png</string>
 		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>SPCreditCell</string>
+			<key>label</key>
+			<string>CySxL</string>
+			<key>url</key>
+			<string>https://github.com/CySxL</string>
+			<key>subtitle</key>
+			<string>roothide Port &amp; Spacing Options</string>
+			<key>imageURL</key>
+			<string>https://github.com/CySxL.png</string>
+		</dict>
 	</array>
 	<key>title</key>
 	<string>MoreComplications</string>
