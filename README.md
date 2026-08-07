@@ -10,3 +10,4 @@ Available on https://skitty.xyz/repo/. Compiled debs can also be found in [relea
 ## Building
 - Setup [Theos](https://theos.dev/) 
 - Set `THEOS_PACKAGE_SCHEME=rootless` for rootless building
+- Set `THEOS_PACKAGE_SCHEME=roothide` for roothide building, which needs the roothide fork of Theos
