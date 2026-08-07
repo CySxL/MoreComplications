@@ -3,7 +3,7 @@ Name: MoreComplications
 Version: 1.7
 Architecture: iphoneos-arm
 Description: Add more complications to your Lock Screen.
-Maintainer: Skitty
+Maintainer: CySxL
 Author: Skitty
 Section: Tweaks
 Depends: mobilesubstrate (>= 0.9.5000), firmware (>= 16.0), preferenceloader
