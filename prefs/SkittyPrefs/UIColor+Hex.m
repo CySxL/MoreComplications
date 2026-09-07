@@ -18,16 +18,16 @@
 		CGFloat r, g, b, a;
 		switch (newString.length) {
 			case 3:
-				r = ((rgbValue & 0xF00) >> 8) / 255.0;
-				g = ((rgbValue & 0xF0) >> 4) / 255.0;
-				b = (rgbValue & 0xF) / 255.0;
+				r = ((rgbValue & 0xF00) >> 8) / 15.0;
+				g = ((rgbValue & 0xF0) >> 4) / 15.0;
+				b = (rgbValue & 0xF) / 15.0;
 				a = 1.0;
 				break;
 			case 4:
-				r = ((rgbValue & 0xF000) >> 16) / 255.0;
-				g = ((rgbValue & 0xF00) >> 8) / 255.0;
-				b = ((rgbValue & 0xF0) >> 4) / 255.0;
-				a = (rgbValue & 0xF) / 255.0;
+				r = ((rgbValue & 0xF000) >> 12) / 15.0;
+				g = ((rgbValue & 0xF00) >> 8) / 15.0;
+				b = ((rgbValue & 0xF0) >> 4) / 15.0;
+				a = (rgbValue & 0xF) / 15.0;
 				break;
 			case 6:
 				r = ((rgbValue & 0xFF0000) >> 16) / 255.0;
@@ -53,7 +53,8 @@
 	}
 	// System colors
 	NSArray *colors = @[@"red", @"green", @"blue", @"cyan", @"magenta", @"yellow", @"brown", @"indigo", @"orange", @"pink", @"purple", @"teal", @"white", @"black", @"clear", @"label", @"secondaryLabel", @"background", @"secondayBackground", @"grouped", @"secondayGrouped", @"darkText", @"lightText"];
-	int color = [colors indexOfObject:hexString];
+	NSUInteger color = [colors indexOfObject:hexString];
+	if (color == NSNotFound) return [UIColor blackColor];
 	switch (color) {
 		case 0: return [UIColor systemRedColor];
 		case 1: return [UIColor systemGreenColor];
