@@ -47,7 +47,8 @@ static int elementSpacing = 10;
 	if (rows == 1 && elementSpacing == 10) return %orig;
 
 	// a preference change can move rows mid-layout, so work off one snapshot
-	int rowCount = rows;
+	int rowsWanted = rows;
+	int rowCount = rowsWanted;
 
 	// an element never needs more than a row to itself, which bounds the growth
 	int groupWidths[rowCount + elements.count];
@@ -80,8 +81,11 @@ static int elementSpacing = 10;
 	// get the original container size so we can reuse the original function
 	double rowGap = [self complicationEdgeInset] * (rowSpacing / 10.0);
 	CGSize smallContainerSize = containerSize;
-	smallContainerSize.height -= rowGap * (rowCount - 1);
-	smallContainerSize.height /= rowCount;
+	// the container was sized for rowsWanted, so every row keeps that height even
+	// when the count grew; dividing by the grown count resizes every complication
+	smallContainerSize.height -= rowGap * (rowsWanted - 1);
+	smallContainerSize.height /= rowsWanted;
+	if (smallContainerSize.height < 0) smallContainerSize.height = 0;
 
 	NSMutableDictionary<CSComplicationLayoutElement *, NSValue *> *newFrames = [[NSMutableDictionary alloc] initWithCapacity:elements.count];
 
