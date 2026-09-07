@@ -9,11 +9,12 @@
 #import "Tweak.h"
 
 #define BUNDLE_ID @"xyz.skitty.morecomplications"
+// the lock screen row is four grid units on every iPhone this targets
 #define ELEMENTS_PER_ROW 4
 
 static BOOL enabled = YES;
 static int rows = 2;
-// tenths of the spacing the system would use, so 10 leaves the layout untouched
+// tenths of the system's own spacing, so 10 is untouched
 static int rowSpacing = 10;
 static int elementSpacing = 10;
 
@@ -21,7 +22,7 @@ static int elementSpacing = 10;
 
 // allow adding more elements to the complication
 + (bool)canAddElement:(CSComplicationLayoutElement *)element toElements:(NSArray<CSComplicationLayoutElement *> *)elements {
-	// one row is what the system already does, so stay out of the way entirely
+	// one row is what the system already does
 	if (!enabled || rows == 1) return %orig;
 	long long totalWidth = 0;
 	for (CSComplicationLayoutElement *e in elements) {
@@ -39,6 +40,7 @@ static int elementSpacing = 10;
 }
 
 // handle the positions of the complications
+// the dragged-element layout enters here too, so keep the work bounded
 + (NSDictionary<CSComplicationLayoutElement *, NSValue *> *)_framesForLayoutElements:(NSArray<CSComplicationLayoutElement *> *)elements containerSize:(CGSize)containerSize {
 	if (!enabled || elements.count == 0) return %orig;
 	// one row with untouched spacing is what the system already does
@@ -47,7 +49,7 @@ static int elementSpacing = 10;
 	// a preference change can move rows mid-layout, so work off one snapshot
 	int rowCount = rows;
 
-	// an element never needs more than a row to itself, which bounds the growth below
+	// an element never needs more than a row to itself, which bounds the growth
 	int groupWidths[rowCount + elements.count];
 	memset(groupWidths, 0, sizeof(groupWidths));
 
@@ -90,8 +92,7 @@ static int elementSpacing = 10;
 		NSDictionary<CSComplicationLayoutElement *, NSValue *> *frames = %orig(group, smallContainerSize);
 		double rowOffset = i * (smallContainerSize.height + rowGap);
 
-		// nothing to respace when the gap is untouched or there is only one element,
-		// so keep the row exactly where the system put it
+		// nothing to respace with an untouched gap or a single element
 		if (elementSpacing == 10 || group.count < 2) {
 			[frames enumerateKeysAndObjectsUsingBlock:^(CSComplicationLayoutElement *element, NSValue *value, BOOL *stop) {
 				NSRect frame = [value CGRectValue];
@@ -108,8 +109,7 @@ static int elementSpacing = 10;
 			return xa > xb ? NSOrderedDescending : NSOrderedSame;
 		}];
 
-		// take the gap the system chose and rebuild the row around our own, keeping
-		// every element at the width it was given
+		// rebuild the row around our own gap, at the widths the system gave
 		double totalWidth = 0;
 		for (CSComplicationLayoutElement *element in ordered) {
 			totalWidth += [frames[element] CGRectValue].size.width;
