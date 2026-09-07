@@ -158,6 +158,8 @@
 
 // Header colors dark mode support
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+	[super traitCollectionDidChange:previousTraitCollection];
+
 	if (@available(iOS 13, *)) {
 		UINavigationBar *bar = self.navigationController.navigationController.navigationBar;
 		if (@available(iOS 13.0, *)) {

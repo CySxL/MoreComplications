@@ -74,7 +74,7 @@
 - (void)setFrame:(CGRect)frame {
 	[super setFrame:frame];
 
-	CGFloat statusBarHeight = 20;
+	CGFloat statusBarHeight;
 	if (@available(iOS 13.0, *)) {
 		statusBarHeight = self.window.windowScene.statusBarManager.statusBarFrame.size.height;
 	} else {
@@ -95,6 +95,8 @@
 }
 
 - (void)traitCollectionDidChange:(UITraitCollection *)previousTraitCollection {
+	[super traitCollectionDidChange:previousTraitCollection];
+
 	if (@available(iOS 13, *)) {
 		if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
 			if (self.settings[@"darkHeaderColor"]) self.backgroundColor = self.settings[@"darkHeaderColor"];
