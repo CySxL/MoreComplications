@@ -139,6 +139,21 @@ static int elementSpacing = 10;
 %end
 
 // Preference updates
+
+// a hand-edited plist can hold any class, and this runs in %ctor
+static BOOL settingsBool(id value, BOOL fallback) {
+	if ([value isKindOfClass:[NSNumber class]] || [value isKindOfClass:[NSString class]]) return [value boolValue];
+	return fallback;
+}
+
+static int settingsInt(id value, int fallback, int min, int max) {
+	int result = fallback;
+	if ([value isKindOfClass:[NSNumber class]] || [value isKindOfClass:[NSString class]]) result = [value intValue];
+	if (result < min) result = min;
+	if (result > max) result = max;
+	return result;
+}
+
 static void refreshPrefs(void) {
 	NSDictionary *settings = nil;
 	CFArrayRef keyList = CFPreferencesCopyKeyList((CFStringRef)BUNDLE_ID, kCFPreferencesCurrentUser, kCFPreferencesAnyHost);
@@ -151,16 +166,10 @@ static void refreshPrefs(void) {
 		settings = [[NSDictionary alloc] initWithContentsOfFile:[NSString stringWithFormat:@"%@%@.plist", settingsPath, BUNDLE_ID]];
 	}
 
-	enabled = settings[@"enabled"] ? [settings[@"enabled"] boolValue] : YES;
-	rows = settings[@"rows"] ? [settings[@"rows"] intValue] : 2;
-	if (rows < 1) rows = 1;
-	if (rows > 8) rows = 8;
-	rowSpacing = settings[@"rowSpacing"] ? [settings[@"rowSpacing"] intValue] : 10;
-	if (rowSpacing < 0) rowSpacing = 0;
-	if (rowSpacing > 20) rowSpacing = 20;
-	elementSpacing = settings[@"elementSpacing"] ? [settings[@"elementSpacing"] intValue] : 10;
-	if (elementSpacing < 0) elementSpacing = 0;
-	if (elementSpacing > 20) elementSpacing = 20;
+	enabled = settingsBool(settings[@"enabled"], YES);
+	rows = settingsInt(settings[@"rows"], 2, 1, 8);
+	rowSpacing = settingsInt(settings[@"rowSpacing"], 10, 0, 20);
+	elementSpacing = settingsInt(settings[@"elementSpacing"], 10, 0, 20);
 }
 
 static void PreferencesChangedCallback(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo) {
