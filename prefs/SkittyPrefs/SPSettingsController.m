@@ -175,11 +175,6 @@
 	}
 }
 
-// Status bar color (requires UINavigationController+StatusBar hack)
-- (UIStatusBarStyle)preferredStatusBarStyle {
-	return UIStatusBarStyleLightContent;
-}
-
 // Header positioning
 - (void)layoutHeader {
 	UITableView *tableView = [self valueForKey:@"_table"];
