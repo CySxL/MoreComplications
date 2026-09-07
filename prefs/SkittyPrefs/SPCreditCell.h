@@ -7,7 +7,6 @@
 @interface SPCreditCell : PSTableCell
 
 @property (nonatomic, retain) UIImageView *creditImageView;
-@property (nonatomic, assign) UIImage *creditImage;
-@property (nonatomic, assign) NSString *twitterUsername;
+@property (nonatomic, retain) UIImage *creditImage;
 
 @end

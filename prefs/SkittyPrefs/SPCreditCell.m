@@ -27,7 +27,6 @@
 		[self.imageView addSubview:self.creditImageView];
 
 		if (specifier.properties[@"twitter"]) {
-			self.twitterUsername = specifier.properties[@"twitter"];
 			if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"twitter://"]]) {
 				specifier.properties[@"url"] = [@"twitter://user?screen_name=" stringByAppendingString:specifier.properties[@"twitter"]];
 			} else {
