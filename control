@@ -1,6 +1,6 @@
 Package: xyz.skitty.morecomplications
 Name: MoreComplications
-Version: 1.8.1
+Version: 1.9
 Architecture: iphoneos-arm
 Description: Add more complications to your Lock Screen.
 Maintainer: CySxL
