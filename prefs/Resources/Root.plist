@@ -123,8 +123,8 @@
 			<string>Skittyblock</string>
 			<key>subtitle</key>
 			<string>Developer</string>
-			<key>imageURL</key>
-			<string>https://github.com/skittyblock.png</string>
+			<key>image</key>
+			<string>credit-skitty</string>
 		</dict>
 		<dict>
 			<key>cellClass</key>
@@ -135,8 +135,8 @@
 			<string>https://github.com/CySxL</string>
 			<key>subtitle</key>
 			<string>roothide Port &amp; Spacing Options</string>
-			<key>imageURL</key>
-			<string>https://github.com/CySxL.png</string>
+			<key>image</key>
+			<string>credit-cysxl</string>
 		</dict>
 	</array>
 	<key>title</key>

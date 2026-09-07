@@ -35,7 +35,7 @@
 			}
 		}
 
-		[self fetchImage];
+		[self loadImage];
 	}
 
 	return self;
@@ -70,19 +70,11 @@
 	self.creditImageView.image = creditImage;
 }
 
-- (void)fetchImage {
-	dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-		NSString *url = self.specifier.properties[@"imageURL"] ?: @"";
-
-		NSURLSession *session = [NSURLSession sharedSession];
-		[[session dataTaskWithURL:[NSURL URLWithString:url] completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
-			if (error) return;
-			UIImage *image = [UIImage imageWithData:data];
-			dispatch_async(dispatch_get_main_queue(), ^{
-				self.creditImage = image;
-			});
-		}] resume];
-	});
+- (void)loadImage {
+	NSString *name = self.specifier.properties[@"image"];
+	if (![name isKindOfClass:[NSString class]]) return;
+	NSString *path = [[NSBundle bundleForClass:self.class] pathForResource:name ofType:@"png"];
+	if (path) self.creditImage = [UIImage imageWithContentsOfFile:path];
 }
 
 @end
