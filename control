@@ -2,11 +2,12 @@ Package: xyz.skitty.morecomplications
 Name: MoreComplications
 Version: 2.0
 Architecture: iphoneos-arm
-Description: Add more complications to your Lock Screen.
-Maintainer: CySxL
-Author: Skitty
-Section: Tweaks
 Depends: mobilesubstrate (>= 0.9.5000), firmware (>= 16.0), preferenceloader
+Description: A fork of Skitty's MoreComplications.
+ Adds more rows of complications to the lock screen.
+ * set the number of rows.
+ * set the spacing between rows & between complications.
+Author: Skitty, CySxL
+Maintainer: CySxL
 Icon: https://skitty.xyz/repo/icons/xyz.skitty.morecomplications.png
-Depiction: https://skitty.xyz/repo/depictions/xyz.skitty.morecomplications/
-SileoDepiction: https://skitty.xyz/repo/depictions/xyz.skitty.morecomplications/sileo.json
+Section: Tweaks
