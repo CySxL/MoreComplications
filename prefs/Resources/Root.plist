@@ -112,7 +112,7 @@
 			<key>label</key>
 			<string>Credits</string>
 			<key>footerText</key>
-			<string>© Skitty 2024</string>
+			<string>© CySxL 2026</string>
 		</dict>
 		<dict>
 			<key>cellClass</key>
@@ -122,9 +122,23 @@
 			<key>twitter</key>
 			<string>Skittyblock</string>
 			<key>subtitle</key>
-			<string>Developer</string>
+			<string>Original Developer</string>
 			<key>image</key>
 			<string>credit-skitty</string>
+			<key>branchBelow</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>SPCreditCell</string>
+			<key>label</key>
+			<string>Source Code</string>
+			<key>url</key>
+			<string>https://github.com/Skittyblock/MoreComplications</string>
+			<key>branch</key>
+			<true/>
+			<key>height</key>
+			<real>34</real>
 		</dict>
 		<dict>
 			<key>cellClass</key>
@@ -134,9 +148,23 @@
 			<key>url</key>
 			<string>https://github.com/CySxL</string>
 			<key>subtitle</key>
-			<string>roothide Port &amp; Spacing Options</string>
+			<string>Maintainer · Spacing Options</string>
 			<key>image</key>
-			<string>credit-cysxl</string>
+			<string>avatar</string>
+			<key>branchBelow</key>
+			<true/>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>SPCreditCell</string>
+			<key>label</key>
+			<string>Source Code</string>
+			<key>url</key>
+			<string>https://github.com/CySxL/MoreComplications</string>
+			<key>branch</key>
+			<true/>
+			<key>height</key>
+			<real>34</real>
 		</dict>
 	</array>
 	<key>title</key>
