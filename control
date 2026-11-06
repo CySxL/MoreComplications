@@ -1,8 +1,11 @@
-Package: xyz.skitty.morecomplications
+Package: com.cysxl.morecomplications
 Name: MoreComplications
 Version: 2.0
 Architecture: iphoneos-arm
 Depends: mobilesubstrate (>= 0.9.5000), firmware (>= 16.0), preferenceloader
+Conflicts: xyz.skitty.morecomplications
+Replaces: xyz.skitty.morecomplications
+Provides: xyz.skitty.morecomplications
 Description: A fork of Skitty's MoreComplications.
  Adds more rows of complications to the lock screen.
  * set the number of rows.
