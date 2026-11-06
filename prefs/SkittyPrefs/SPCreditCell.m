@@ -69,7 +69,7 @@ static const CGFloat kSPAvatarSide = 38.0;
 			specifier.properties[@"url"] = [@"https://twitter.com/" stringByAppendingString:twitter];
 		}
 
-		[self loadImage];
+		[self loadImageForSpecifier:specifier];
 	}
 
 	return self;
@@ -145,8 +145,9 @@ static const CGFloat kSPAvatarSide = 38.0;
 	self.creditImageView.image = creditImage;
 }
 
-- (void)loadImage {
-	NSString *name = self.specifier.properties[@"image"];
+// self.specifier is still nil during init, so the image name comes from the argument
+- (void)loadImageForSpecifier:(PSSpecifier *)specifier {
+	NSString *name = specifier.properties[@"image"];
 	if (![name isKindOfClass:[NSString class]]) return;
 	NSString *path = [[NSBundle bundleForClass:self.class] pathForResource:name ofType:@"png"];
 	if (path) self.creditImage = [UIImage imageWithContentsOfFile:path];
