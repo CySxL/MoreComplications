@@ -1,4 +1,4 @@
-#import "SkittyPrefs/SPSettingsController.h"
+#import <Preferences/PSListController.h>
 
-@interface MCSettingsController : SPSettingsController
+@interface MCSettingsController : PSListController
 @end

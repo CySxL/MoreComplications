@@ -2,20 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>name</key>
-	<string>MoreComplications</string>
-	<key>subtitle</key>
-	<string>By Skitty</string>
-	<key>titleFontSize</key>
-	<real>38</real>
-	<key>subtitleFontSize</key>
-	<real>26</real>
-	<key>tintColor</key>
-	<string>#53b567</string>
-	<key>textColor</key>
-	<string>#ffffff</string>
-	<key>subtitleTextColor</key>
-	<string>#ffffffc0</string>
 	<key>items</key>
 	<array>
 		<dict>
