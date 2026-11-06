@@ -163,6 +163,22 @@
 			<string>https://github.com/CySxL/MoreComplications</string>
 			<key>branch</key>
 			<true/>
+			<key>branchBelow</key>
+			<true/>
+			<key>height</key>
+			<real>34</real>
+		</dict>
+		<dict>
+			<key>cellClass</key>
+			<string>SPCreditCell</string>
+			<key>label</key>
+			<string>Tip on Ko-fi</string>
+			<key>url</key>
+			<string>https://ko-fi.com/cysxl</string>
+			<key>branch</key>
+			<true/>
+			<key>branchSymbol</key>
+			<string>cup.and.saucer</string>
 			<key>height</key>
 			<real>34</real>
 		</dict>
