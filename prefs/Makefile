@@ -7,6 +7,13 @@ MoreComplications_PRIVATE_FRAMEWORKS = Preferences
 MoreComplications_INSTALL_PATH = /Library/PreferenceBundles
 MoreComplications_CFLAGS = -fobjc-arc -Wno-deprecated-declarations
 
+# Version shown in the settings header, taken from control
+MC_VERSION := $(shell sed -n 's/^Version: //p' $(THEOS_PROJECT_DIR)/control)
+ifeq ($(MC_VERSION),)
+$(error no Version line in $(THEOS_PROJECT_DIR)/control)
+endif
+MoreComplications_CFLAGS += -DPACKAGE_VERSION='"$(MC_VERSION)"'
+
 include $(THEOS)/makefiles/common.mk
 include $(THEOS_MAKE_PATH)/bundle.mk
 
